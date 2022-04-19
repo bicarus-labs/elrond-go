@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 // CacheConfig will map the cache configuration
 type CacheConfig struct {
 	Name                 string
@@ -83,6 +85,7 @@ type EvictionWaitingListConfig struct {
 
 // EpochStartConfig will hold the configuration of EpochStart settings
 type EpochStartConfig struct {
+	TimeToWaitForRequestedData        time.Duration
 	MinRoundsBetweenEpochs            int64
 	RoundsPerEpoch                    int64
 	MinShuffledOutRestartThreshold    float64

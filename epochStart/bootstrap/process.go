@@ -45,8 +45,6 @@ import (
 
 var log = logger.GetOrCreate("epochStart/bootstrap")
 
-// DefaultTimeToWaitForRequestedData represents the default timespan until requested data needs to be received from the connected peers
-const DefaultTimeToWaitForRequestedData = time.Minute
 const timeBetweenRequests = 100 * time.Millisecond
 const maxToRequest = 100
 const gracePeriodInPercentage = float64(0.25)
@@ -333,7 +331,7 @@ func (e *epochStartBootstrap) Bootstrap() (Parameters, error) {
 		return Parameters{}, err
 	}
 
-	e.epochStartMeta, err = e.epochStartMetaBlockSyncer.SyncEpochStartMeta(DefaultTimeToWaitForRequestedData)
+	e.epochStartMeta, err = e.epochStartMetaBlockSyncer.SyncEpochStartMeta(e.generalConfig.EpochStartConfig.TimeToWaitForRequestedData)
 	if err != nil {
 		return Parameters{}, err
 	}
@@ -590,7 +588,7 @@ func (e *epochStartBootstrap) syncHeadersFrom(meta data.MetaHeaderHandler) (map[
 		shardIds = append(shardIds, core.MetachainShardId)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeToWaitForRequestedData)
+	ctx, cancel := context.WithTimeout(context.Background(), e.generalConfig.EpochStartConfig.TimeToWaitForRequestedData)
 	err := e.headersSyncer.SyncMissingHeadersByHash(shardIds, hashesToRequest, ctx)
 	cancel()
 	if err != nil {
@@ -803,7 +801,7 @@ func (e *epochStartBootstrap) requestAndProcessForShard() error {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeToWaitForRequestedData)
+	ctx, cancel := context.WithTimeout(context.Background(), e.generalConfig.EpochStartConfig.TimeToWaitForRequestedData)
 	err = e.miniBlocksSyncer.SyncPendingMiniBlocks(epochStartData.GetPendingMiniBlockHeaderHandlers(), ctx)
 	cancel()
 	if err != nil {
@@ -828,7 +826,7 @@ func (e *epochStartBootstrap) requestAndProcessForShard() error {
 	}
 
 	e.headersSyncer.ClearFields()
-	ctx, cancel = context.WithTimeout(context.Background(), DefaultTimeToWaitForRequestedData)
+	ctx, cancel = context.WithTimeout(context.Background(), e.generalConfig.EpochStartConfig.TimeToWaitForRequestedData)
 	err = e.headersSyncer.SyncMissingHeadersByHash(shardIds, hashesToRequest, ctx)
 	cancel()
 	if err != nil {

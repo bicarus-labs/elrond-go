@@ -12,6 +12,7 @@ import (
 	"github.com/ElrondNetwork/elrond-go-core/data/block"
 	"github.com/ElrondNetwork/elrond-go-core/data/scheduled"
 	"github.com/ElrondNetwork/elrond-go-core/data/smartContractResult"
+	"github.com/ElrondNetwork/elrond-go/config"
 	"github.com/ElrondNetwork/elrond-go/epochStart"
 	"github.com/ElrondNetwork/elrond-go/process"
 	"github.com/ElrondNetwork/elrond-go/update"
@@ -23,6 +24,7 @@ type startInEpochWithScheduledDataSyncer struct {
 	scheduledMiniBlocksSyncer epochStart.PendingMiniBlocksSyncHandler
 	txSyncer                  update.TransactionsSyncHandler
 	scheduledEnableEpoch      uint32
+	config                    config.Config
 }
 
 func newStartInEpochShardHeaderDataSyncerWithScheduled(
@@ -31,6 +33,7 @@ func newStartInEpochShardHeaderDataSyncerWithScheduled(
 	miniBlocksSyncer epochStart.PendingMiniBlocksSyncHandler,
 	txSyncer update.TransactionsSyncHandler,
 	scheduledEnableEpoch uint32,
+	config config.Config,
 ) (*startInEpochWithScheduledDataSyncer, error) {
 
 	if check.IfNil(scheduledTxsHandler) {
@@ -52,6 +55,7 @@ func newStartInEpochShardHeaderDataSyncerWithScheduled(
 		scheduledHeadersSyncer:    headersSyncer,
 		txSyncer:                  txSyncer,
 		scheduledEnableEpoch:      scheduledEnableEpoch,
+		config:                    config,
 	}, nil
 }
 
@@ -188,7 +192,7 @@ func (ses *startInEpochWithScheduledDataSyncer) syncHeaders(
 	hashesToRequest [][]byte,
 ) (map[string]data.HeaderHandler, error) {
 	ses.scheduledHeadersSyncer.ClearFields()
-	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeToWaitForRequestedData)
+	ctx, cancel := context.WithTimeout(context.Background(), ses.config.EpochStartConfig.TimeToWaitForRequestedData)
 	err := ses.scheduledHeadersSyncer.SyncMissingHeadersByHash(shardIDs, hashesToRequest, ctx)
 	cancel()
 	if err != nil {
@@ -208,7 +212,7 @@ func (ses *startInEpochWithScheduledDataSyncer) getRequiredMiniBlocksByMbHeader(
 	mbHeaders []data.MiniBlockHeaderHandler,
 ) (map[string]*block.MiniBlock, error) {
 	ses.scheduledMiniBlocksSyncer.ClearFields()
-	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeToWaitForRequestedData)
+	ctx, cancel := context.WithTimeout(context.Background(), ses.config.EpochStartConfig.TimeToWaitForRequestedData)
 	err := ses.scheduledMiniBlocksSyncer.SyncPendingMiniBlocks(mbHeaders, ctx)
 	cancel()
 	if err != nil {

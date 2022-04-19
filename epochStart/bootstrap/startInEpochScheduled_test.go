@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ElrondNetwork/elrond-go/config"
 	"github.com/ElrondNetwork/elrond-go/process"
 	"github.com/stretchr/testify/assert"
 
@@ -26,7 +27,7 @@ func Test_newStartInEpochShardHeaderDataSyncerWithScheduledNilScheduledTxHandler
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(nil, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, args.ScheduledEnableEpoch)
+	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(nil, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, args.ScheduledEnableEpoch, config.Config{})
 	require.Nil(t, ds)
 	require.Equal(t, epochStart.ErrNilScheduledTxsHandler, err)
 }
@@ -35,7 +36,7 @@ func Test_newStartInEpochShardHeaderDataSyncerWithScheduledNilHeadersSyncer(t *t
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, nil, args.MiniBlocksSyncer, args.TxSyncer, args.ScheduledEnableEpoch)
+	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, nil, args.MiniBlocksSyncer, args.TxSyncer, args.ScheduledEnableEpoch, config.Config{})
 	require.Nil(t, ds)
 	require.Equal(t, epochStart.ErrNilHeadersSyncer, err)
 }
@@ -44,7 +45,7 @@ func Test_newStartInEpochShardHeaderDataSyncerWithScheduledNilMiniBlocksSyncer(t
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, nil, args.TxSyncer, args.ScheduledEnableEpoch)
+	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, nil, args.TxSyncer, args.ScheduledEnableEpoch, config.Config{})
 	require.Nil(t, ds)
 	require.Equal(t, epochStart.ErrNilMiniBlocksSyncer, err)
 }
@@ -53,7 +54,7 @@ func Test_newStartInEpochShardHeaderDataSyncerWithScheduledNilTxSyncer(t *testin
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, nil, args.ScheduledEnableEpoch)
+	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, nil, args.ScheduledEnableEpoch, config.Config{})
 	require.Nil(t, ds)
 	require.Equal(t, epochStart.ErrNilTransactionsSyncer, err)
 }
@@ -62,7 +63,7 @@ func Test_newStartInEpochShardHeaderDataSyncerWithScheduled(t *testing.T) {
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, args.ScheduledEnableEpoch)
+	ds, err := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, args.ScheduledEnableEpoch, config.Config{})
 	require.Nil(t, err)
 	require.NotNil(t, ds)
 }
@@ -71,7 +72,7 @@ func TestStartInEpochWithScheduledDataSyncer_UpdateSyncDataIfNeededScheduledNotE
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 
 	notarizedShardHeader := createTestHeader()
 	notarizedShardHeader.Epoch = 2
@@ -92,7 +93,7 @@ func TestStartInEpochWithScheduledDataSyncer_UpdateSyncDataIfNeededGetRequiredHe
 			return expectedErr
 		},
 	}
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 
 	notarizedShardHeader := createTestHeader()
 	notarizedShardHeader.Epoch = 2
@@ -114,7 +115,7 @@ func TestStartInEpochWithScheduledDataSyncer_UpdateSyncDataIfNeededGetMiniBlocks
 		},
 	}
 
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 
 	notarizedShardHeader := createTestHeader()
 	notarizedShardHeader.Epoch = 2
@@ -142,7 +143,7 @@ func TestStartInEpochWithScheduledDataSyncer_UpdateSyncDataIfNeededScheduledEnab
 		},
 	}
 
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 0)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 0, config.Config{})
 
 	header, headersMap, err := ds.UpdateSyncDataIfNeeded(notarizedShardHeader)
 	require.Nil(t, err)
@@ -164,7 +165,7 @@ func TestStartInEpochWithScheduledDataSyncer_syncHeadersShouldErrOnFailureToSync
 			return expectedErr
 		},
 	}
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 	hashesToRequest := [][]byte{[]byte("hash1"), []byte("hash2")}
 	shardIDs := []uint32{0, 1}
 
@@ -186,7 +187,7 @@ func TestStartInEpochWithScheduledDataSyncer_syncHeaders(t *testing.T) {
 			return expectedHeadersMap, nil
 		},
 	}
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 	hashesToRequest := [][]byte{[]byte("hash1"), []byte("hash2")}
 	shardIDs := []uint32{0, 1}
 
@@ -210,7 +211,7 @@ func TestStartInEpochWithScheduledDataSyncer_getRequiredMiniBlocksByMbHeaderWith
 		},
 	}
 
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 	mbHeader := &block.MiniBlockHeader{
 		Hash:            []byte("some miniblock"),
 		SenderShardID:   0,
@@ -253,7 +254,7 @@ func TestStartInEpochWithScheduledDataSyncer_getRequiredMiniBlocksByMbHeader(t *
 		},
 	}
 
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 	mbHeaderHandlers := []data.MiniBlockHeaderHandler{
 		mbHeader,
 	}
@@ -267,7 +268,7 @@ func TestStartInEpochWithScheduledDataSyncer_GetRootHashToSyncNoScheduled(t *tes
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 	expectedRootHash := []byte("root hash")
 	notarizedHeader := &block.Header{
 		Nonce:    1,
@@ -283,7 +284,7 @@ func TestStartInEpochWithScheduledDataSyncer_GetRootHashToSyncWithScheduled(t *t
 	t.Parallel()
 
 	args := createDefaultDataSyncerFactoryArgs()
-	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10)
+	ds, _ := newStartInEpochShardHeaderDataSyncerWithScheduled(args.ScheduledTxsHandler, args.HeadersSyncer, args.MiniBlocksSyncer, args.TxSyncer, 10, config.Config{})
 	blockRootHash := []byte("root hash")
 	expectedRootHash := []byte("scheduled root hash")
 	notarizedHeader := &block.HeaderV2{
