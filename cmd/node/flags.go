@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"time"
 
 	"github.com/ElrondNetwork/elrond-go-core/core"
 	logger "github.com/ElrondNetwork/elrond-go-logger"
@@ -265,6 +266,12 @@ var (
 			"Should be enabled if data is not available in local disk.",
 	}
 
+	timeToWaitForRequestedData = cli.Uint64Flag{
+		Name:  "time-to-wait-for-requested-data",
+		Usage: "This flag represents the default timespan until requested data needs to be received from the connected peers (in second unit)",
+		Value: uint64(60),
+	}
+
 	// importDbDirectory defines a flag for the optional import DB directory on which the node will re-check the blockchain against
 	importDbDirectory = cli.StringFlag{
 		Name: "import-db",
@@ -349,6 +356,7 @@ func getFlags() []cli.Flag {
 		numEpochsToSave,
 		numActivePersisters,
 		startInEpoch,
+		timeToWaitForRequestedData,
 		importDbDirectory,
 		importDbNoSigCheck,
 		importDbSaveEpochRootHash,
@@ -388,6 +396,7 @@ func applyFlags(ctx *cli.Context, cfgs *config.Configs, flagsConfig *config.Cont
 	cfgs.ConfigurationPathsHolder.GasScheduleDirectoryName = ctx.GlobalString(gasScheduleConfigurationDirectory.Name)
 	cfgs.ConfigurationPathsHolder.SmartContracts = ctx.GlobalString(smartContractsFile.Name)
 	cfgs.ConfigurationPathsHolder.ValidatorKey = ctx.GlobalString(validatorKeyPemFile.Name)
+	cfgs.GeneralConfig.EpochStartConfig.TimeToWaitForRequestedData = time.Duration(ctx.GlobalInt64(timeToWaitForRequestedData.Name)) * time.Second
 
 	if ctx.IsSet(startInEpoch.Name) {
 		log.Debug("start in epoch is enabled")
