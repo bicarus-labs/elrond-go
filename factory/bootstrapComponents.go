@@ -158,7 +158,7 @@ func (bcf *bootstrapComponentsFactory) Create() (*bootstrapComponents, error) {
 		return nil, err
 	}
 
-	dataSyncerFactory := bootstrap.NewScheduledDataSyncerFactory()
+	dataSyncerFactory := bootstrap.NewScheduledDataSyncerFactory(bcf.config)
 
 	epochStartBootstrapArgs := bootstrap.ArgsEpochStartBootstrap{
 		CoreComponentsHolder:       bcf.coreComponents,
@@ -189,7 +189,7 @@ func (bcf *bootstrapComponentsFactory) Create() (*bootstrapComponents, error) {
 			ArgsEpochStartBootstrap:    epochStartBootstrapArgs,
 			ImportDbConfig:             bcf.importDbConfig,
 			ChanGracefullyClose:        bcf.coreComponents.ChanStopNodeProcess(),
-			TimeToWaitForRequestedData: bootstrap.DefaultTimeToWaitForRequestedData,
+			TimeToWaitForRequestedData: bcf.config.EpochStartConfig.TimeToWaitForRequestedData,
 		}
 
 		epochStartBootstrapper, err = bootstrap.NewStorageEpochStartBootstrap(storageArg)

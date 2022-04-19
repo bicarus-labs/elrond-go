@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"testing"
 
+	"github.com/ElrondNetwork/elrond-go/config"
 	"github.com/ElrondNetwork/elrond-go/epochStart"
 	"github.com/ElrondNetwork/elrond-go/epochStart/bootstrap/types"
 	"github.com/ElrondNetwork/elrond-go/testscommon"
@@ -12,12 +13,12 @@ import (
 )
 
 func TestNewScheduledDataSyncerFactory(t *testing.T) {
-	sdsFactory := NewScheduledDataSyncerFactory()
+	sdsFactory := NewScheduledDataSyncerFactory(config.Config{})
 	require.NotNil(t, sdsFactory)
 }
 
 func TestScheduledDataSyncerFactory_CreateNilScheduledTxsHandler(t *testing.T) {
-	sdsFactory := NewScheduledDataSyncerFactory()
+	sdsFactory := NewScheduledDataSyncerFactory(config.Config{})
 	args := createDefaultDataSyncerFactoryArgs()
 	args.ScheduledTxsHandler = nil
 
@@ -27,7 +28,7 @@ func TestScheduledDataSyncerFactory_CreateNilScheduledTxsHandler(t *testing.T) {
 }
 
 func TestScheduledDataSyncerFactory_CreateNilHeadersSyncer(t *testing.T) {
-	sdsFactory := NewScheduledDataSyncerFactory()
+	sdsFactory := NewScheduledDataSyncerFactory(config.Config{})
 	args := createDefaultDataSyncerFactoryArgs()
 	args.HeadersSyncer = nil
 
@@ -37,7 +38,7 @@ func TestScheduledDataSyncerFactory_CreateNilHeadersSyncer(t *testing.T) {
 }
 
 func TestScheduledDataSyncerFactory_CreateNilMiniBlocksSyncer(t *testing.T) {
-	sdsFactory := NewScheduledDataSyncerFactory()
+	sdsFactory := NewScheduledDataSyncerFactory(config.Config{})
 	args := createDefaultDataSyncerFactoryArgs()
 	args.MiniBlocksSyncer = nil
 
@@ -47,7 +48,7 @@ func TestScheduledDataSyncerFactory_CreateNilMiniBlocksSyncer(t *testing.T) {
 }
 
 func TestScheduledDataSyncerFactory_CreateNilTxSyncer(t *testing.T) {
-	sdsFactory := NewScheduledDataSyncerFactory()
+	sdsFactory := NewScheduledDataSyncerFactory(config.Config{})
 	args := createDefaultDataSyncerFactoryArgs()
 	args.TxSyncer = nil
 
@@ -57,7 +58,7 @@ func TestScheduledDataSyncerFactory_CreateNilTxSyncer(t *testing.T) {
 }
 
 func TestScheduledDataSyncerFactory_Create(t *testing.T) {
-	sdsFactory := NewScheduledDataSyncerFactory()
+	sdsFactory := NewScheduledDataSyncerFactory(config.Config{})
 	args := createDefaultDataSyncerFactoryArgs()
 
 	dataSyncer, err := sdsFactory.Create(args)
